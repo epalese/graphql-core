@@ -114,6 +114,37 @@ from graphql.execution.execute import execute
 execute(schema, ast, executor=SyncExecutor())
 ```
 
+Using `graphql.execution.executors.asyncio.AsyncioExecutor`:
+```python
+import asyncio
+from graphql.execution import execute
+from graphql.language.parser import parse
+from graphql.execution.executors.asyncio import AsyncioExecutor
+from graphql import (
+    graphql,
+    GraphQLSchema,
+    GraphQLObjectType,
+    GraphQLField,
+    GraphQLString
+)
+
+async def resolver(context, *_):
+    await asyncio.sleep(0.001)
+    return 'world'
+
+schema = GraphQLSchema(
+    query=GraphQLObjectType(
+        name='RootQueryType', fields={
+            'hello': GraphQLField(type=GraphQLString, resolver=resolver)
+        }
+    )
+)
+
+query = parse('{ hello }')
+result = execute(schema, query, executor=AsyncioExecutor())
+print(result.data)
+``` 
+
 ## Main Contributors
 
  * [@syrusakbary](https://github.com/syrusakbary/)
